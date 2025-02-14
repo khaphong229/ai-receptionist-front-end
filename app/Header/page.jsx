@@ -87,24 +87,24 @@ let Icons = [
 const people = [
   {
     id: 1,
-    name: "INSTAGRAM",
-    designation: "@Joscriptt",
-    image: "/img/time.png",
-    href: "https://instagram.com/Joscriptt ",
+    name: "PTIT",
+    designation: "Posts and Telecommunications Institute of Technology",
+    image: "/img/ptit.png",
+    href: "https://ptit.edu.vn/",
   },
   {
     id: 2,
-    name: "TWITTER",
-    designation: "@Joenaldo",
-    image: "/img/alarm.png",
-    href: "https://twitter.com/Joenaldo",
+    name: "FIT",
+    designation: "Fukuoka Institute of Technology",
+    image: "/img/fit.png",
+    href: "https://www.fit.ac.jp/en/",
   },
   {
     id: 3,
     name: "GITHUB",
-    designation: "Joscriptt",
-    image: "/img/party.png",
-    href: "https://github.com/Joscriptt",
+    designation: "khaphong229",
+    image: "/img/github.png",
+    href: "https://github.com/khaphong229",
   },
 ];
 
@@ -144,8 +144,8 @@ function Headpage() {
       <div className="flex justify-between md:max-w-5xl max-w-lg mx-auto lg:mt-16 mt-11 md:px-8 px-9">
         <div className="flex gap-x-3 items-center">
           <Switch checked={checked} setChecked={setChecked} />
-          <p className="text-sm text-white hidden md:block">
-            Download as Template
+          <p className="text-sm text-black dark:text-white hidden md:block">
+            Mode toggle
           </p>
         </div>
 
