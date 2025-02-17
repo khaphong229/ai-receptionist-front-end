@@ -1,7 +1,7 @@
 import PageHook from "@/app/pageHook";
 
-function page() {
+function Page() {
   return <PageHook />;
 }
 
-export default page;
+export default Page;

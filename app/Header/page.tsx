@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
-
 import {
   PiTwitterLogoThin,
   PiInstagramLogoThin,
@@ -22,61 +20,18 @@ import {
   useSpring,
 } from "framer-motion";
 
-const itemVariants = {
-  closed: {
-    opacity: 0,
-  },
-  open: { opacity: 1 },
-};
+interface Person {
+  id: number;
+  name: string;
+  designation: string;
+  image: string;
+  href: string;
+}
 
-const sideVariants = {
-  closed: {
-    transition: {
-      staggerChildren: 0.1,
-      staggerDirection: -1,
-    },
-  },
-  open: {
-    transition: {
-      staggerChildren: 0.1,
-      staggerDirection: 1,
-    },
-  },
-};
-
-const ButtonVariant = {
-  closed: {
-    height: "4rem",
-    transition: { duration: 0.1 },
-  },
-
-  open: {
-    height: "25rem",
-    transition: { when: "beforeChildren", duration: 0.1 },
-  },
-};
-
-let textvariant = {
-  hidden: {
-    opacity: 0,
-  },
-  show: {
-    opacity: 1,
-  },
-};
-
-// const links = [
-//   { name: "Discover", href: "/" },
-//   { name: "Templates", href: "/templates" },
-//   { name: "Mockups", href: "/Mockups" },
-//   { name: "Graphics", href: "/graphics" },
-// ];
-// const bootonLinks = [
-//   { name: "Magazine", href: "/magazine" },
-//   { name: "About", href: "/about" },
-//   { name: "Support", href: "/support" },
-//   { name: "Contact", href: "/contact" },
-// ];
+interface SwitchProps {
+  checked: boolean;
+  setChecked: (checked: boolean) => void;
+}
 
 let Icons = [
   { name: <PiTwitterLogoThin />, href: "https://twitter.com/Joenaldo" },
@@ -84,7 +39,7 @@ let Icons = [
   { name: <PiGithubLogoLight />, href: "https://github.com/Joscriptt" },
 ];
 
-const people = [
+const people: Person[] = [
   {
     id: 1,
     name: "PTIT",
@@ -103,7 +58,7 @@ const people = [
     id: 3,
     name: "GITHUB",
     designation: "khaphong229",
-    image: "/img/github.png",
+    image: "/img/github-light.png",
     href: "https://github.com/khaphong229",
   },
 ];
@@ -112,8 +67,8 @@ function Headpage() {
   const [open, cycleOpen] = useCycle(false, true);
   const [isOpen, setIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const [hoveredIndex, setHoveredIndex] = useState(null);
   const springConfig = { stiffness: 100, damping: 5 };
   const x = useMotionValue(0); // going to set this value on mouse move
 
@@ -144,9 +99,7 @@ function Headpage() {
       <div className="flex justify-between md:max-w-5xl max-w-lg mx-auto lg:mt-16 mt-11 md:px-8 px-9">
         <div className="flex gap-x-3 items-center">
           <Switch checked={checked} setChecked={setChecked} />
-          <p className="text-sm text-black dark:text-white hidden md:block">
-            Mode toggle
-          </p>
+          <p className="text-sm text-primary hidden md:block">Mode toggle</p>
         </div>
 
         {/* come back to fix this later */}
@@ -221,12 +174,7 @@ function Headpage() {
   );
 }
 
-{
-  /* <ThemeToggleNav /> */
-}
-export default Headpage;
-
-const Switch = ({ checked, setChecked }) => {
+const Switch: React.FC<SwitchProps> = ({ checked, setChecked }) => {
   let { resolvedTheme, setTheme } = useTheme();
   let otherTheme = resolvedTheme === "dark" ? "light" : "dark";
 
@@ -274,14 +222,4 @@ const Switch = ({ checked, setChecked }) => {
   );
 };
 
-export function ThemeToggleNav({ className, rel, mouseX, ...props }) {
-  let { resolvedTheme, setTheme } = useTheme();
-  let otherTheme = resolvedTheme === "dark" ? "light" : "dark";
-  let [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  return <></>;
-}
+export default Headpage;

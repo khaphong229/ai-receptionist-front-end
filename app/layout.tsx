@@ -1,9 +1,12 @@
 import Theming from "@/Theme/Theming";
 import "./globals.css";
-
 import Headpage from "./Header/page";
 
-export default function RootLayout({ children }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>

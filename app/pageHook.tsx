@@ -1,14 +1,8 @@
 "use client";
 
-// I WANTED USING ZOD FOR ERROR HANDLING BUT ITS A MINI PROJECT
-// PROBABLY NEXT TUTORIAL
-import { PiWarningThin } from "react-icons/pi";
 import { TbArrowsJoin2 } from "react-icons/tb";
-
-import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
-
 import {
   AnimatePresence,
   motion,
@@ -16,64 +10,73 @@ import {
   useMotionValue,
   useSpring,
 } from "framer-motion";
-
 import Snowfall from "react-snowfall";
+import { useForm, Controller } from "react-hook-form";
+import Link from "next/link";
 
-const people = [
+interface Person {
+  id: number;
+  name: string;
+  designation: string;
+  image: string;
+  href: string;
+}
+
+interface FormData {
+  email: string;
+}
+
+interface ModalProps {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+}
+
+interface RecievedModalProps {
+  isOpenModel: boolean;
+  setIsOpenModel: (isOpen: boolean) => void;
+}
+
+const people: Person[] = [
   {
     id: 1,
     name: "JOIN NOW",
     designation: "How bout u join my fuqin waitlist 😂",
     image: "/img/email.png",
-    href: "https://instagram.com/Joscriptt ",
+    href: "https://instagram.com/Joscriptt",
   },
 ];
 
-// useForm
-import { useForm, Controller } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// Zod
-import { z } from "zod";
-
-// const emailSchema = z.object({
-//   email: z.string().email()
-//   .min(10, "Email must at least be 5-7 characters long"),
-// });
-
 function PageHook() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpenModel, setIsOpenModel] = useState(false);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpenModel, setIsOpenModel] = useState<boolean>(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const springConfig = { stiffness: 100, damping: 5 };
-  const x = useMotionValue(0); // going to set this value on mouse move
+  const x = useMotionValue(0);
 
   const {
-    // register,
     handleSubmit,
     control,
     formState: { errors, isSubmitting, isDirty, isValid },
     reset,
-  } = useForm();
+  } = useForm<FormData>();
 
-  // rotate the tooltip
   const rotate = useSpring(
     useTransform(x, [-100, 100], [-45, 45]),
     springConfig
   );
 
-  // translate the tooltip
   const translateX = useSpring(
     useTransform(x, [-100, 100], [-50, 20]),
     springConfig
   );
 
-  const handleMouseMove = (event) => {
-    const halfWidth = event.target.offsetWidth / 2;
-    x.set(event.nativeEvent.offsetX - halfWidth); // set the x value, which is then used in transform and rotate
+  const handleMouseMove = (event: React.MouseEvent<HTMLImageElement>) => {
+    const halfWidth = event.currentTarget.offsetWidth / 2;
+    x.set(event.nativeEvent.offsetX - halfWidth);
   };
 
-  const validateEmail = (mail) => {
+  const validateEmail = (mail: string): boolean => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     return emailRegex.test(mail);
   };
@@ -85,12 +88,13 @@ function PageHook() {
     }, 4000);
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FormData) => {
     try {
-      let res = await fetch("/api/email", {
+      const res = await fetch("/api/email", {
         method: "POST",
         body: JSON.stringify(data.email),
       });
+
       if (res.ok) {
         reset();
         handleOpenModel();
@@ -98,7 +102,7 @@ function PageHook() {
 
       if (!res.ok) {
         reset();
-        throw new Error({ message: "Email already exists" });
+        throw new Error("Email already exists");
       }
     } catch (error) {
       console.log(error);
@@ -108,7 +112,7 @@ function PageHook() {
   return (
     <div className="h-full w-full p-3 flex items-center justify-center relative z-50">
       <Snowfall
-        snowflakeCount={200}
+        snowflakeCount={100}
         color="grey"
         style={{
           position: "fixed",
@@ -116,8 +120,8 @@ function PageHook() {
           height: "100vh",
           zIndex: -9,
         }}
-        speed={"140"}
-        radius={"12"}
+        speed={[1, 3]}
+        radius={[1, 3]}
       />
       <section className=" mt-5  ">
         <div className="space-y-4 ">
@@ -184,7 +188,9 @@ function PageHook() {
               type="submit"
             >
               <TbArrowsJoin2 className="text-neutral-500" />
-              <span className="shrink-0 text-neutral-300">Get started</span>
+              <Link href="/home" className="shrink-0 text-neutral-300">
+                Get started
+              </Link>
             </button>
           </div>
           <div className="p-3 rounded-lg border dark:border-white/10 border-neutral-400 dark:border-opacity-10 relative top-14 sm:top-14 lg:top-24 max-w-xl mx-auto flex flex-col lg:flex-row justify-between items-center text-sm">
@@ -196,7 +202,7 @@ function PageHook() {
               className=" bg-zinc-700/30 lg:py-1 py-2 px-2 w-full lg:w-fit mt-3 md:mt-3 lg:mt-0 text-center rounded-md  text-white"
               href="/"
             >
-              <span>Terms & Conditions</span>
+              <span>Terms of Use</span>
             </Link>
             <SpringModal isOpen={isOpen} setIsOpen={setIsOpen} />
             <RecievedModal
@@ -211,9 +217,7 @@ function PageHook() {
   );
 }
 
-export default PageHook;
-
-const SpringModal = ({ isOpen, setIsOpen }) => {
+const SpringModal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -237,22 +241,51 @@ const SpringModal = ({ isOpen, setIsOpen }) => {
             // onClick={(e) => e.stopPropagation()}
             className="bg-white/20 backdrop-blur-lg  border border-white/10 border-opacity-10 text-white p-6 rounded-lg w-full max-w-lg shadow-xl cursor-default relative "
           >
-            <Image
-              width={100}
-              height={100}
-              className="w-16 absolute right-0 -top-16"
-              src="/img/whisper.png"
-              alt="whisper"
-            />
-
             <div className="relative z-10">
-              <p className="lg:text-justify  leading-6 mb-6">
-                I'm doing a little Giveaway on the Launch of this Template
-                Website by December. So If you sign up today, which will only
-                take a few seconds and 1 click, you'll automatically be
-                participated in our giveaway and 10 lucky people will get free
-                access to one of Our Premium Templates, free of cost!
-              </p>
+              <div className="lg:text-justify  leading-6 mb-6">
+                <h2>Terms of Use</h2>
+                <p>
+                  Welcome to our AI-powered customer interaction system. By
+                  using this project, you agree to the following terms:
+                </p>
+
+                <ol>
+                  <li>
+                    <strong>Free Usage</strong>
+                    <br />
+                    This project is open-source and free to use for personal,
+                    educational, and commercial purposes.
+                  </li>
+                  <li>
+                    <strong>No Warranty</strong>
+                    <br />
+                    This project is provided "as is" without any warranties,
+                    guarantees, or liability for any damages resulting from its
+                    use.
+                  </li>
+                  <li>
+                    <strong>Privacy & Data Handling</strong>
+                    <br />
+                    While using this system, any collected data (such as face
+                    recognition logs) will be processed and stored according to
+                    the user's implementation. We do not take responsibility for
+                    data misuse.
+                  </li>
+                  <li>
+                    <strong>Modifications & Distribution</strong>
+                    <br />
+                    You are free to modify, distribute, and integrate this
+                    system into your own projects without restrictions.
+                  </li>
+                </ol>
+
+                <p>
+                  <strong>
+                    By using this project, you acknowledge and accept these
+                    terms.
+                  </strong>
+                </p>
+              </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => setIsOpen(false)}
@@ -275,7 +308,11 @@ const SpringModal = ({ isOpen, setIsOpen }) => {
     </AnimatePresence>
   );
 };
-const RecievedModal = ({ isOpenModel, setIsOpenModel }) => {
+
+const RecievedModal: React.FC<RecievedModalProps> = ({
+  isOpenModel,
+  setIsOpenModel,
+}) => {
   return (
     <AnimatePresence>
       {isOpenModel && (
@@ -337,3 +374,5 @@ const RecievedModal = ({ isOpenModel, setIsOpenModel }) => {
     </AnimatePresence>
   );
 };
+
+export default PageHook;
