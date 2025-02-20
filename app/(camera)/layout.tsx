@@ -1,4 +1,6 @@
 import "../globals.css";
+import Theming from "@/Theme/Theming";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function CameraLayout({
   children,
@@ -6,8 +8,13 @@ export default function CameraLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html>
-      <body>{children}</body>
+    <html lang="en">
+      <body>
+        <Theming>
+          <Toaster />
+          <main className="h-screen">{children}</main>
+        </Theming>
+      </body>
     </html>
   );
-} 
+}
