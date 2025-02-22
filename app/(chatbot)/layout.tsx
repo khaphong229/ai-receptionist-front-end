@@ -1,6 +1,6 @@
 import SharedLayout from "../layouts/SharedLayout";
 
-export default function CameraLayout({
+export default function ChatbotLayout({
   children,
 }: {
   children: React.ReactNode;
