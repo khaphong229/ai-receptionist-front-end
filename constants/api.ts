@@ -14,5 +14,6 @@ export const API = {
   },
   CHATBOT: {
     CHAT: `${CHATBOT_API_URL}/chat`,
+    SPEAK: `${CHATBOT_API_URL}/speak`,
   },
 };
