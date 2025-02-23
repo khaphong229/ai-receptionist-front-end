@@ -54,7 +54,7 @@ const ChatbotButton = () => {
       const userMessage = inputMessage;
       setInputMessage("");
       
-      const response = await chatbotService.sendMessage(userMessage, tts);
+      const response = await chatbotService.sendMessage(userMessage, ttsEnabled);
       
       if (response.status === "success") {
         setMessages((prev) => [...prev, { text: response.message, isBot: true }]);
@@ -131,7 +131,11 @@ const ChatbotButton = () => {
               <input
                 value={inputMessage}
                 onChange={handleInputChange}
-                onKeyDown={handleKeyPress}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !isLoading) {
+                    handleSendMessage(ttsEnabled);
+                  }
+                }}
                 placeholder="Type your message..."
                 disabled={isLoading}
                 className="flex-1 px-4 py-2 rounded-full border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
