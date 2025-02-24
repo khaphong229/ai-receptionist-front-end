@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import UpdateCustomerModal from "@/app/(camera)/components/UpdateCustomerModal";
 import { API } from "@/constants/api";
 import { faceService } from "@/services/face";
-import { CustomerId } from "@/utils/localStorage";
+import { CustomerId, CustomerInfo } from "@/utils/localStorage";
 
 export default function CameraInterface() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -53,6 +53,7 @@ export default function CameraInterface() {
           // Xóa customer_id cũ trước khi set mới
           CustomerId.deleteCustomerId();
           setCustomerInfo({});
+          CustomerInfo.deleteCustomerInfo();
           setType("");
 
           toast({
@@ -63,6 +64,7 @@ export default function CameraInterface() {
           if (result.message === "Customer found") {
             CustomerId.setCustomerId(result.customer.id);
             setCustomerInfo(result.customer);
+            CustomerInfo.setCustomerInfo(JSON.stringify(result.customer));
             setType("confirm");
             setIsUpdateCustomerModalOpen(true);
           } else if (result.message === "New customer created") {
@@ -91,7 +93,13 @@ export default function CameraInterface() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
+    <div className="w-full h-full aspect-video relative">
+      <Webcam
+        audio={false}
+        ref={webcamRef}
+        screenshotFormat="image/jpeg"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
       <UpdateCustomerModal
         type={type}
         customerInfo={customerInfo}
@@ -111,27 +119,19 @@ export default function CameraInterface() {
         speed={[1, 3]}
         radius={[1, 3]}
       />
-      <div className="w-full max-w-5xl aspect-video relative overflow-hidden rounded-lg bg-background shadow-xl">
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <Button
-            onClick={capture}
-            disabled={isLoading}
-            className="px-4 py-2 bg-background/80 backdrop-blur-sm rounded-md hover:bg-background/90 transition-colors text-primary"
-          >
-            {isLoading ? (
-              <Loader className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Camera className="w-4 h-4 mr-2" />
-            )}
-            {isLoading ? `Capturing... (${captureCount}/10)` : "Capture photos"}
-          </Button>
-        </div>
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Button
+          onClick={capture}
+          disabled={isLoading}
+          className="px-4 py-2 bg-background/80 backdrop-blur-sm rounded-md hover:bg-background/90 transition-colors text-primary"
+        >
+          {isLoading ? (
+            <Loader className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Camera className="w-4 h-4 mr-2" />
+          )}
+          {isLoading ? `Capturing... (${captureCount}/10)` : "Capture photos"}
+        </Button>
       </div>
     </div>
   );

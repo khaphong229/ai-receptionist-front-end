@@ -58,9 +58,9 @@ const VoiceWaveAnimation = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center w-full">
-      <div className="bg-background rounded-xl p-8 shadow-2xl">
-        <canvas ref={canvasRef} className="w-[300px] h-[150px]" />
+    <div className="flex items-center justify-start w-full h-full">
+      <div className="bg-background rounded-xl p-4 w-full h-full">
+        <canvas ref={canvasRef} className="w-full h-full" />
       </div>
     </div>
   );

@@ -188,7 +188,7 @@ function PageHook() {
               type="submit"
             >
               <TbArrowsJoin2 className="text-neutral-500" />
-              <Link href="/recognize" className="shrink-0 text-neutral-300">
+              <Link href="/dashboard" className="shrink-0 text-neutral-300">
                 Get started
               </Link>
             </button>

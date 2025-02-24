@@ -79,7 +79,6 @@ export function UpdateCustomerModal({
   const [isExtractSuccess, setIsExtractSuccess] = useState(false);
   const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
 
   const handleScanId = async () => {
     if (!webcamRef.current) return;
@@ -170,7 +169,6 @@ export function UpdateCustomerModal({
           }`,
         });
         onOpenChange(false);
-        router.push("/chat");
       } else {
         toast({
           title: "Error",
@@ -317,9 +315,10 @@ export function UpdateCustomerModal({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-2 items-start">
                     <Label htmlFor="id_number" className="text-center">
-                      ID Card Number
+                      Card Number
                     </Label>
                     <Input
+                      type="password"
                       id="id_number"
                       value={formData.id_number}
                       onChange={handleChange("id_number")}

@@ -1,3 +1,5 @@
+"use client";
+
 import "../globals.css";
 import Theming from "@/Theme/Theming";
 import { Toaster } from "@/components/ui/toaster";
@@ -12,12 +14,32 @@ import {
 import { Button } from "@/components/ui/button";
 import { UserRound } from "lucide-react";
 import Link from "next/link";
+import { CustomerInfo } from "@/utils/localStorage";
+import { useEffect, useState } from "react";
 
 export default function SharedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [userName, setUserName] = useState<string>("Anonymous");
+
+  useEffect(() => {
+    const customerInfoStr = CustomerInfo.getCustomerInfo();
+    if (customerInfoStr) {
+      try {
+        const customerInfo = JSON.parse(customerInfoStr);
+        console.log(customerInfo);
+
+        if (customerInfo.full_name) {
+          setUserName(customerInfo.full_name);
+        }
+      } catch (error) {
+        console.error("Error parsing customer info:", error);
+      }
+    }
+  }, []);
+
   return (
     <html lang="en">
       <body>
@@ -28,22 +50,23 @@ export default function SharedLayout({
             <div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost">
-                    <UserRound className="w-4 h-4 mr-2" />
-                    Anonymous
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <UserRound className="w-4 h-4" />
+                    <span className="max-w-[150px] truncate">{userName}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent align="end">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link href="/">Home</Link>
+                  <DropdownMenuItem asChild>
+                    <Link href="/" className="w-full">
+                      Home
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href="/recognize">Face Recognition</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href="/chatbot">ChatBot</Link>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="w-full">
+                      Dashboard
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

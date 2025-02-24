@@ -7,19 +7,23 @@ interface ChatMessageProps {
 
 export const ChatMessage = ({ message, isBot }: ChatMessageProps) => {
   return (
-    <div className={`flex items-end space-x-2 mb-4 ${isBot ? "justify-start" : "justify-end"}`}>
-        {/* AvaTar Bot */}
+    <div
+      className={`flex items-end space-x-2 mb-4 ${
+        isBot ? "justify-start" : "justify-end"
+      }`}
+    >
+      {/* Avatar Bot */}
       {isBot && (
-        <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-          <Bot className="w-5 h-5" />
+        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+          <Bot className="w-5 h-5 text-primary" />
         </div>
       )}
-      
-         {/* Bubble chat  - Content chat*/}
+
+      {/* Bubble chat - Content chat*/}
       <div
         className={`px-4 py-2 rounded-2xl max-w-[70%] ${
-          isBot 
-            ? "bg-secondary text-secondary-foreground rounded-bl-none" 
+          isBot
+            ? "bg-primary/10 text-foreground rounded-bl-none"
             : "bg-primary text-primary-foreground rounded-br-none"
         }`}
       >
@@ -33,4 +37,4 @@ export const ChatMessage = ({ message, isBot }: ChatMessageProps) => {
       )}
     </div>
   );
-}; 
+};
