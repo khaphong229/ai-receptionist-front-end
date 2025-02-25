@@ -1,11 +1,21 @@
 "use client";
 
 import { useState, ChangeEvent, KeyboardEvent, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, Volume2, VolumeX } from "lucide-react";
+import {
+  MessageCircle,
+  X,
+  Send,
+  Bot,
+  Volume2,
+  VolumeX,
+  Mic,
+} from "lucide-react";
 import { chatbotService } from "@/services/chatbot";
 import { ChatMessage } from "./ChatMessage";
 import { TypingIndicator } from "./TypingIndicator";
 import { useToast } from "@/hooks/use-toast";
+import { useVoiceRecorder } from '@/hooks/use-voice-recorder';
+import { speechService } from '@/services/speech';
 
 interface Message {
   text: string;
@@ -20,12 +30,14 @@ const ChatbotButton = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [ttsEnabled, setTtsEnabled] = useState(true);
+  const { isRecording, startRecording, stopRecording } = useVoiceRecorder();
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-   // Auto scroll to bottom when new message arrives
+  // Auto scroll to bottom when new message arrives
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -50,26 +62,71 @@ const ChatbotButton = () => {
     try {
       setIsLoading(true);
       setMessages((prev) => [...prev, { text: inputMessage, isBot: false }]);
-      
+
       const userMessage = inputMessage;
       setInputMessage("");
-      
-      const response = await chatbotService.sendMessage(userMessage, ttsEnabled);
-      
+
+      const response = await chatbotService.sendMessage(
+        userMessage,
+        ttsEnabled
+      );
+
       if (response.status === "success") {
-        setMessages((prev) => [...prev, { text: response.message, isBot: true }]);
+        setMessages((prev) => [
+          ...prev,
+          { text: response.message, isBot: true },
+        ]);
       } else {
         throw new Error(response.message);
       }
-      
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to send message",
+        description:
+          error instanceof Error ? error.message : "Failed to send message",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleVoiceInput = async () => {
+    try {
+      if (isRecording) {
+        stopRecording();
+        return;
+      }
+
+      await startRecording(async (audioBlob) => {
+        try {
+          setIsLoading(true);
+          const text = await speechService.convertSpeechToText(audioBlob);
+          setInputMessage(text);
+          setIsLoading(false);
+
+          // Auto click nút submit sau 1 giây
+          setTimeout(() => {
+            if (text.trim() && submitButtonRef.current) {
+              submitButtonRef.current.click();
+            }
+          }, 1000);
+
+        } catch (error) {
+          toast({
+            title: "Error",
+            description: "Failed to convert speech to text",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+        }
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to access microphone",
+        variant: "destructive",
+      });
     }
   };
 
@@ -98,9 +155,9 @@ const ChatbotButton = () => {
               <button
                 onClick={() => setTtsEnabled(!ttsEnabled)}
                 className={`p-2 rounded-full transition-colors ${
-                  ttsEnabled 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-secondary text-secondary-foreground'
+                  ttsEnabled
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground"
                 }`}
               >
                 {ttsEnabled ? (
@@ -115,11 +172,7 @@ const ChatbotButton = () => {
           {/* Messages */}
           <div className="flex-1 p-4 overflow-y-auto">
             {messages.map((msg, index) => (
-              <ChatMessage
-                key={index}
-                message={msg.text}
-                isBot={msg.isBot}
-              />
+              <ChatMessage key={index} message={msg.text} isBot={msg.isBot} />
             ))}
             {isLoading && <TypingIndicator />}
             <div ref={messagesEndRef} /> {/* Element with scroll */}
@@ -128,21 +181,29 @@ const ChatbotButton = () => {
           {/* Input area */}
           <div className="p-4 border-t bg-background">
             <div className="flex items-center space-x-2">
+              <button
+                onClick={handleVoiceInput}
+                disabled={isLoading}
+                className={`p-2 rounded-full transition-colors ${
+                  isRecording 
+                    ? "bg-red-500 text-white" 
+                    : "bg-primary text-primary-foreground"
+                } hover:bg-primary/90 disabled:opacity-50`}
+              >
+                <Mic className={`w-5 h-5 ${isRecording ? "animate-pulse" : ""}`} />
+              </button>
               <input
                 value={inputMessage}
                 onChange={handleInputChange}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !isLoading) {
-                    handleSendMessage(ttsEnabled);
-                  }
-                }}
+                onKeyDown={handleKeyPress}
                 placeholder="Type your message..."
-                disabled={isLoading}
+                disabled={isLoading || isRecording}
                 className="flex-1 px-4 py-2 rounded-full border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
               />
               <button
+                ref={submitButtonRef}
                 onClick={() => handleSendMessage(ttsEnabled)}
-                disabled={isLoading}
+                disabled={isLoading || isRecording}
                 className="p-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
               >
                 <Send className="h-5 w-5" />

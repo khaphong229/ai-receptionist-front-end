@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Snowfall from "react-snowfall";
 
 const VoiceWaveAnimation = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
