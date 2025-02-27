@@ -172,7 +172,7 @@ function PageHook() {
               </p> */}
             </div>
             <h1 className="text-3xl font-bold  sm:text-5xl xl:text-6xl/none bg-clip-text text-transparent dark:bg-gradient-to-r bg-gradient-to-tr dark:from-white from-black to-neutral-600 dark:to-neutral-800 capitalize md:max-w-2xl lg:max-w-3xl mx-auto ">
-              Lysia - AI Receptionist Restaurant
+              Lysia - AI Restaurant Receptionist
             </h1>
             <p className="max-w-[600px]  leading-7 text-center text-[16px] bg-clip-text text-transparent dark:bg-gradient-to-br bg-gradient-to-tr dark:from-white from-black to-neutral-600 dark:to-neutral-700 mx-auto ">
               Lysia enhances customer service with face recognition, voice

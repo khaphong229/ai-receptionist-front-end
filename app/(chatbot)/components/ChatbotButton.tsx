@@ -28,7 +28,7 @@ const ChatbotButton = ({ defaultOpen = false }: ChatbotButtonProps) => {
   const [isChatbotOpen, setIsChatbotOpen] = useState(defaultOpen);
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: "Hello, I'm Lysia - AI Receptionist Restaurant, How can I help you?",
+      text: "Hello, I'm Lysia - AI Restaurant Receptionist, How can I help you?",
       isBot: true,
     },
   ]);
