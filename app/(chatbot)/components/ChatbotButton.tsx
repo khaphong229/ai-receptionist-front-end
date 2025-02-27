@@ -32,6 +32,7 @@ const ChatbotButton = () => {
   const [ttsEnabled, setTtsEnabled] = useState(true);
   const { isRecording, startRecording, stopRecording } = useVoiceRecorder();
   const submitButtonRef = useRef<HTMLButtonElement>(null);
+  const [isInitializing, setIsInitializing] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -41,6 +42,15 @@ const ChatbotButton = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMessages([{
+        text: "Hi! I'm your AI Assistant. How can I help you today?",
+        isBot: true
+      }]);
+    }
+  }, []);
 
   const toggleChatbot = () => {
     setIsChatbotOpen(!isChatbotOpen);
@@ -98,30 +108,40 @@ const ChatbotButton = () => {
         return;
       }
 
+      setIsInitializing(true);
       await startRecording(async (audioBlob) => {
         try {
           setIsLoading(true);
           const text = await speechService.convertSpeechToText(audioBlob);
-          setInputMessage(text);
-          setIsLoading(false);
+          if (text.trim()) {
+            setInputMessage(text);
+            setIsLoading(false);
 
-          // Auto click nút submit sau 1 giây
-          setTimeout(() => {
-            if (text.trim() && submitButtonRef.current) {
-              submitButtonRef.current.click();
-            }
-          }, 1000);
-
+            setTimeout(() => {
+              if (submitButtonRef.current) {
+                submitButtonRef.current.click();
+              }
+            }, 500);
+          } else {
+            toast({
+              title: "No speech detected",
+              description: "Please try speaking again",
+              variant: "default"
+            });
+          }
         } catch (error) {
           toast({
             title: "Error",
             description: "Failed to convert speech to text",
             variant: "destructive",
           });
+        } finally {
           setIsLoading(false);
+          setIsInitializing(false);
         }
       });
     } catch (error) {
+      setIsInitializing(false);
       toast({
         title: "Error",
         description: "Failed to access microphone",
@@ -186,11 +206,13 @@ const ChatbotButton = () => {
                 disabled={isLoading}
                 className={`p-2 rounded-full transition-colors ${
                   isRecording 
-                    ? "bg-red-500 text-white" 
+                    ? "bg-red-500 text-white animate-pulse"
+                    : isInitializing
+                    ? "bg-yellow-500 text-white"
                     : "bg-primary text-primary-foreground"
                 } hover:bg-primary/90 disabled:opacity-50`}
               >
-                <Mic className={`w-5 h-5 ${isRecording ? "animate-pulse" : ""}`} />
+                <Mic className="w-5 h-5" />
               </button>
               <input
                 value={inputMessage}

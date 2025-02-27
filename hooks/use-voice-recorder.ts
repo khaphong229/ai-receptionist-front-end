@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export const useVoiceRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -48,6 +48,15 @@ export const useVoiceRecorder = () => {
       setIsRecording(false);
     }
   }, [mediaRecorder, isRecording]);
+
+  // Cleanup resources khi unmount
+  useEffect(() => {
+    return () => {
+      if (mediaRecorder) {
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   return {
     isRecording,
