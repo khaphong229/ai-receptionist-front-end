@@ -1,21 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CameraInterface from "@/app/(camera)/recognize/page";
 import ChatbotButton from "@/app/(chatbot)/components/ChatbotButton";
 import VoiceWaveAnimation from "@/app/(chatbot)/components/VoiceWaveAnimation";
-import { Button } from "@/components/ui/button";
 import { Calendar, Cloud, UserCheck } from "lucide-react";
 import AppointmentForm from "@/app/(appointment)/components/AppointmentForm";
+import AppointmentCheckin from "@/app/(appointment)/components/AppointmentCheckin/AppointmentCheckin";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [isOpenCamera, setIsOpenCamera] = useState(false);
-  const [weatherData] = useState({
-    temperature: "25°C",
-    condition: "Sunny",
+  const [weatherData, setWeatherData] = useState({
+    temperature: "--°C",
+    condition: "Loading...",
   });
 
   const openAppointmentForm = () => {
@@ -25,6 +25,35 @@ export default function DashboardPage() {
   const openCheckInCamera = () => {
     setIsOpenCamera(true);
   };
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const apiKey = "c3f998bd503fed892fa123bfbcb56db1"; // Thay bằng API Key của bạn
+        const city = "Hanoi"; // Có thể thay đổi thành địa phương của bạn
+        const response = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          setWeatherData({
+            temperature: `${Math.round(data.main.temp)}°C`,
+            condition: data.weather[0].main,
+          });
+        } else {
+          setWeatherData({
+            temperature: "--°C",
+            condition: "Dont have weather data",
+          });
+        }
+      } catch (error) {
+        setWeatherData({ temperature: "--°C", condition: "Connection error" });
+      }
+    };
+
+    fetchWeather();
+  }, []);
 
   return (
     <>
@@ -43,25 +72,23 @@ export default function DashboardPage() {
         </div>
 
         <div className="col-span-2 rounded-lg flex items-center">
-          <Button
-            variant="outline"
-            className="w-full h-full flex flex-col items-center justify-center p-4 "
+          <button
+            className="w-full h-full flex flex-col items-center justify-center p-4 rounded-lg border border-input hover:bg-accent transition-colors"
             onClick={openAppointmentForm}
           >
             <Calendar className="w-10 h-10" />
             <span className="block text-xl mt-2">Book</span>
-          </Button>
+          </button>
         </div>
 
         <div className="col-span-2 rounded-lg flex items-center">
-          <Button
-            variant="outline"
-            className="w-full h-full flex flex-col items-center justify-center p-4 "
+          <button
+            className="w-full h-full flex flex-col items-center justify-center p-4 rounded-lg border border-input hover:bg-accent transition-colors"
             onClick={openCheckInCamera}
           >
             <UserCheck className="w-10 h-10" />
             <span className="block text-xl mt-2">Check-in</span>
-          </Button>
+          </button>
         </div>
 
         {/* Bottom Row */}
@@ -82,11 +109,11 @@ export default function DashboardPage() {
           <DialogPrimitive.Content className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg sm:max-w-[600px]">
             <div className="flex flex-col space-y-1.5 text-center sm:text-left">
               <DialogPrimitive.Title className="text-lg font-semibold leading-none tracking-tight">
-                Check-in QR Scanner
+                Check-in
               </DialogPrimitive.Title>
             </div>
-            <div className="h-[400px]">
-              <CameraInterface />
+            <div className="h-[500px]">
+              <AppointmentCheckin />
             </div>
           </DialogPrimitive.Content>
         </DialogPrimitive.Portal>

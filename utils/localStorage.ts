@@ -27,3 +27,10 @@ export const CustomerInfo = {
     window.dispatchEvent(new Event("customerInfoUpdated"));
   },
 };
+
+export const ClearLocalStorage = {
+  clearLocalStorage: () => {
+    localStorage.removeItem("customerId");
+    localStorage.removeItem("customerInfo");
+  },
+};

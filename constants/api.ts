@@ -23,5 +23,6 @@ export const API = {
     GET: `${APPOINTMENT_API_URL}/get`,
     CREATE: `${APPOINTMENT_API_URL}/create`,
     VERIFY: `${APPOINTMENT_API_URL}/verify`,
+    GET_ALL: `${APPOINTMENT_API_URL}/customer`,
   },
 };

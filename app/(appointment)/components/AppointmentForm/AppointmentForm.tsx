@@ -131,7 +131,7 @@ export default function AppointmentForm({
       } else {
         toast({
           title: "Error",
-          description: "Failed to book appointment",
+          description: response.message || "Failed to book appointment",
         });
       }
     } catch (error) {

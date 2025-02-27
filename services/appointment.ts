@@ -41,12 +41,23 @@ export const appointmentService = {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(appointmentId),
+        body: JSON.stringify({ appointment_id: appointmentId }),
       });
       const data = await response.json();
       return data;
     } catch (error) {
       throw new Error("Failed to verify appointment");
+    }
+  },
+  getAllAppointments: async (id: string) => {
+    try {
+      const response = await fetch(
+        `${API.APPOINTMENT.GET_ALL}/${id}/appointments`
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw new Error("Failed to get all appointments");
     }
   },
 };

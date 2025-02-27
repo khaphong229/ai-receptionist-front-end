@@ -7,7 +7,7 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { UserRound } from "lucide-react";
 import Link from "next/link";
-import { CustomerInfo } from "@/utils/localStorage";
+import { ClearLocalStorage, CustomerInfo } from "@/utils/localStorage";
 import { useEffect, useState } from "react";
 
 export default function SharedLayout({
@@ -15,7 +15,7 @@ export default function SharedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [userName, setUserName] = useState<string>("Anonymous");
+  const [userName, setUserName] = useState<string>("Account");
 
   const updateUserName = () => {
     const customerInfoStr = CustomerInfo.getCustomerInfo();
@@ -29,6 +29,11 @@ export default function SharedLayout({
         console.error("Error parsing customer info:", error);
       }
     }
+  };
+
+  const handleLogout = () => {
+    ClearLocalStorage.clearLocalStorage();
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -98,6 +103,14 @@ export default function SharedLayout({
                       <Link href="/dashboard" className="w-full">
                         Dashboard
                       </Link>
+                    </DropdownMenuPrimitive.Item>
+                    <DropdownMenuPrimitive.Item
+                      asChild
+                      className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    >
+                      <button onClick={handleLogout} className="w-full">
+                        Logout
+                      </button>
                     </DropdownMenuPrimitive.Item>
                   </DropdownMenuPrimitive.Content>
                 </DropdownMenuPrimitive.Portal>
