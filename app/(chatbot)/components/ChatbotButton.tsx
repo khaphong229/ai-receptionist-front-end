@@ -27,7 +27,6 @@ interface ChatbotButtonProps {
 }
 
 const ChatbotButton = ({ defaultOpen = false }: ChatbotButtonProps) => {
-  const [isChatbotOpen, setIsChatbotOpen] = useState(defaultOpen);
   const [messages, setMessages] = useState<Message[]>([
     {
       text: "Hello, I'm Lysia - AI Restaurant Receptionist, How can I help you?",
@@ -62,10 +61,6 @@ const ChatbotButton = ({ defaultOpen = false }: ChatbotButtonProps) => {
       ]);
     }
   }, []);
-
-  const toggleChatbot = () => {
-    setIsChatbotOpen(!isChatbotOpen);
-  };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputMessage(e.target.value);
@@ -162,89 +157,74 @@ const ChatbotButton = ({ defaultOpen = false }: ChatbotButtonProps) => {
   };
 
   return (
-    <div className="fixed bottom-10 right-10 z-10">
-      <button
-        onClick={toggleChatbot}
-        className="group relative rounded-full w-14 h-14 bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl"
-      >
-        {isChatbotOpen ? (
-          <X className="h-6 w-6 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 rotate-0 group-hover:rotate-90" />
-        ) : (
-          <Bot className="h-6 w-6 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-        )}
-      </button>
-
-      {isChatbotOpen && (
-        <div className="absolute bottom-20 right-0 w-[380px] h-[600px] bg-background rounded-2xl shadow-2xl flex flex-col border overflow-hidden">
-          {/* Header with toggle TTS */}
-          <div className="p-4 border-b bg-primary/5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Bot className="w-6 h-6 text-primary" />
-                <h2 className="text-lg font-semibold">AI Assistant</h2>
-              </div>
-              <button
-                onClick={() => setTtsEnabled(!ttsEnabled)}
-                className={`p-2 rounded-full transition-colors ${
-                  ttsEnabled
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-secondary-foreground"
-                }`}
-              >
-                {ttsEnabled ? (
-                  <Volume2 className="w-4 h-4" />
-                ) : (
-                  <VolumeX className="w-4 h-4" />
-                )}
-              </button>
-            </div>
+    <div className="w-full h-full flex flex-col bg-background rounded-2xl shadow-lg border overflow-hidden">
+      {/* Header with toggle TTS */}
+      <div className="p-4 border-b bg-primary/5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Bot className="w-6 h-6 text-primary" />
+            <h2 className="text-lg font-semibold">AI Assistant</h2>
           </div>
-
-          {/* Messages */}
-          <div className="flex-1 p-4 overflow-y-auto">
-            {messages.map((msg, index) => (
-              <ChatMessage key={index} message={msg.text} isBot={msg.isBot} />
-            ))}
-            {isLoading && <TypingIndicator />}
-            <div ref={messagesEndRef} /> {/* Element with scroll */}
-          </div>
-
-          {/* Input area */}
-          <div className="p-4 border-t bg-background">
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={handleVoiceInput}
-                disabled={isLoading}
-                className={`p-2 rounded-full transition-colors ${
-                  isRecording
-                    ? "bg-red-500 text-white animate-pulse"
-                    : isInitializing
-                    ? "bg-yellow-500 text-white"
-                    : "bg-primary text-primary-foreground"
-                } hover:bg-primary/90 disabled:opacity-50`}
-              >
-                <Mic className="w-5 h-5" />
-              </button>
-              <input
-                value={inputMessage}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyPress}
-                placeholder="Type your message..."
-                disabled={isLoading || isRecording}
-                className="flex-1 px-4 py-2 rounded-full border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
-              />
-              <button
-                ref={submitButtonRef}
-                onClick={() => handleSendMessage(ttsEnabled)}
-                disabled={isLoading || isRecording}
-                className="p-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
-              >
-                <Send className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
+          <button
+            onClick={() => setTtsEnabled(!ttsEnabled)}
+            className={`p-2 rounded-full transition-colors ${
+              ttsEnabled
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground"
+            }`}
+          >
+            {ttsEnabled ? (
+              <Volume2 className="w-4 h-4" />
+            ) : (
+              <VolumeX className="w-4 h-4" />
+            )}
+          </button>
         </div>
-      )}
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 p-4 overflow-y-auto">
+        {messages.map((msg, index) => (
+          <ChatMessage key={index} message={msg.text} isBot={msg.isBot} />
+        ))}
+        {isLoading && <TypingIndicator />}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input area */}
+      <div className="p-4 border-t bg-background">
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={handleVoiceInput}
+            disabled={isLoading}
+            className={`p-2 rounded-full transition-colors ${
+              isRecording
+                ? "bg-red-500 text-white animate-pulse"
+                : isInitializing
+                ? "bg-yellow-500 text-white"
+                : "bg-primary text-primary-foreground"
+            } hover:bg-primary/90 disabled:opacity-50`}
+          >
+            <Mic className="w-5 h-5" />
+          </button>
+          <input
+            value={inputMessage}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyPress}
+            placeholder="Type your message..."
+            disabled={isLoading || isRecording}
+            className="flex-1 px-4 py-2 rounded-full border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
+          />
+          <button
+            ref={submitButtonRef}
+            onClick={() => handleSendMessage(ttsEnabled)}
+            disabled={isLoading || isRecording}
+            className="p-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+          >
+            <Send className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

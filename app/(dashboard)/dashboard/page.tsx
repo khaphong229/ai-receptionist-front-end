@@ -7,12 +7,8 @@ import VoiceWaveAnimation from "@/app/(chatbot)/components/VoiceWaveAnimation";
 import { Button } from "@/components/ui/button";
 import { Calendar, Cloud, UserCheck } from "lucide-react";
 import AppointmentForm from "@/app/(appointment)/components/AppointmentForm";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
   const [isOpenForm, setIsOpenForm] = useState(false);
@@ -46,49 +42,55 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="col-span-2 bg-card rounded-lg flex items-center">
+        <div className="col-span-2 rounded-lg flex items-center">
           <Button
-            className="w-full h-full flex flex-col"
             variant="outline"
+            className="w-full h-full flex flex-col items-center justify-center p-4 "
             onClick={openAppointmentForm}
           >
             <Calendar className="w-10 h-10" />
-            <span className="block text-xl">Book</span>
+            <span className="block text-xl mt-2">Book</span>
           </Button>
         </div>
 
-        <div className="col-span-2 bg-card rounded-lg flex items-center">
+        <div className="col-span-2 rounded-lg flex items-center">
           <Button
-            className="w-full h-full flex flex-col"
             variant="outline"
+            className="w-full h-full flex flex-col items-center justify-center p-4 "
             onClick={openCheckInCamera}
           >
             <UserCheck className="w-10 h-10" />
-            <span className="block text-xl">Check-in</span>
+            <span className="block text-xl mt-2">Check-in</span>
           </Button>
         </div>
 
         {/* Bottom Row */}
-        <div className="col-span-8 bg-card rounded-lg overflow-hidden h-[500px]">
+        <div className="col-span-8 bg-card rounded-lg overflow-hidden h-[600px]">
           <CameraInterface />
         </div>
 
-        <div className="col-span-4 bg-card rounded-lg overflow-hidden h-[500px]">
+        <div className="col-span-4 bg-card rounded-lg overflow-hidden h-[600px]">
           <ChatbotButton defaultOpen={true} />
         </div>
       </div>
+
       <AppointmentForm open={isOpenForm} setOpen={setIsOpenForm} />
 
-      <Dialog open={isOpenCamera} onOpenChange={setIsOpenCamera}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Check-in QR Scanner</DialogTitle>
-          </DialogHeader>
-          <div className="h-[400px]">
-            <CameraInterface />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <DialogPrimitive.Root open={isOpenCamera} onOpenChange={setIsOpenCamera}>
+        <DialogPrimitive.Portal>
+          <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+          <DialogPrimitive.Content className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg sm:max-w-[600px]">
+            <div className="flex flex-col space-y-1.5 text-center sm:text-left">
+              <DialogPrimitive.Title className="text-lg font-semibold leading-none tracking-tight">
+                Check-in QR Scanner
+              </DialogPrimitive.Title>
+            </div>
+            <div className="h-[400px]">
+              <CameraInterface />
+            </div>
+          </DialogPrimitive.Content>
+        </DialogPrimitive.Portal>
+      </DialogPrimitive.Root>
     </>
   );
 }

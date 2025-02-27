@@ -18,8 +18,12 @@ export const CustomerInfo = {
   },
   setCustomerInfo: (customerInfo: string) => {
     localStorage.setItem("customerInfo", customerInfo);
+    // Dispatch a custom event when customer info is updated
+    window.dispatchEvent(new Event("customerInfoUpdated"));
   },
   deleteCustomerInfo: () => {
     localStorage.removeItem("customerInfo");
+    // Also dispatch the event when info is deleted
+    window.dispatchEvent(new Event("customerInfoUpdated"));
   },
 };
